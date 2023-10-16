@@ -27,7 +27,7 @@ theme_estat <- function(...) {
 }
 
 #CARREGAMENTO DO BANCO DE DADOS
-base_vendas <- read.csv("/Users/victo/Documents/PS_ESTAT_23_2/Base de dados/vendas.csv") %>%
+base_vendas <- read.csv("data/vendas.csv") %>%
   mutate(
     Data.Venda=as.Date(Data.Venda, format = "%m/%d/%Y"),
     Ano = lubridate::year(Data.Venda),
@@ -37,14 +37,16 @@ base_vendas <- read.csv("/Users/victo/Documents/PS_ESTAT_23_2/Base de dados/vend
 
 # Agrupar e resumir os dados por mes
 faturamento_anual <- base_vendas %>%
-  group_by(AnoMes, Category) %>%
+  group_by(Mes, Category) %>%
   summarise(Faturamento_Ano = sum(Price)) %>%
   na.omit()
 
 # Visualização do faturamento anual
-ggplot(faturamento_anual, aes(x = AnoMes, y = Faturamento_Ano, color = Category)) +
+ggplot(faturamento_anual, aes(x = Mes, y = Faturamento_Ano, color = Category)) +
   geom_line(stat = "identity") +
-  labs(x = "Ano", y = "Faturamento Anual", title = "Faturamento Anual ao Longo do Tempo") +
+  labs(x = "Mês", y = "Faturamento", title = "Faturamento do Ano de 2022") +
   scale_color_manual(values = cores_estat) +
-  scale_x_yearmon(breaks=sort(unique(faturamento_anual$AnoMes))) +
+  scale_x_continuous(breaks=1:12, labels=1:12) +
   theme_estat()
+
+ggsave("img/faturamentoanual.pdf", width = 158, height = 93, units = "mm")
